@@ -1,0 +1,19 @@
+homebrew_taps:
+  - caskroom/cask
+
+homebrew_packages:
+  - { name: zsh }
+  - { name: tmux }
+  - { name: jq }
+  - { name: peco }
+
+homebrew_cask_packages:
+  - { name: google-japanese-ime }
+  - { name: alfred }
+  - { name: google-chrome }
+  - { name: iterm2 }
+  - { name: atom }
+  - { name: docker }
+  - { name: shiftit }
+  - { name: hyperswitch }
+  - { name: skype }

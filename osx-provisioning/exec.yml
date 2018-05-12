@@ -1,0 +1,7 @@
+- hosts: localhost
+  connection: local
+  roles:
+    - { role: homebrew, tags: [homebrew] }
+    - { role: zsh, tags: [zsh], become: yes }
+    - { role: dotfiles, tags: [dotfiles]}
+    - { role: jekyll, tags: [jekyll] }

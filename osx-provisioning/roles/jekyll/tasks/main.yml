@@ -1,0 +1,38 @@
+- name: Check if anyenv is installed
+  stat: path={{ ansible_env.HOME }}/.anyenv
+  register: anyenv_is_installed
+
+- name: Install anyenv
+  git: repo=https://github.com/riywo/anyenv dest=~/.anyenv version=master accept_hostkey=yes
+  when:
+    - not anyenv_is_installed.stat.exists
+
+- name: Initialize anyenv
+  shell: |
+      echo 'export PATH="$HOME/.anyenv/bin:$PATH"' >> ~/.zprofile
+      echo 'eval "$(anyenv init -)"' >> ~/.zprofile
+  when:
+    - not anyenv_is_installed.stat.exists
+
+- name: Check if rbenv is installed
+  stat: path={{ ansible_env.HOME }}/.anyenv/envs/rbenv
+  register: rbenv_is_installed
+
+- name: Install rbenv
+  shell: anyenv install rbenv
+  when:
+    - not rbenv_is_installed.stat.exists
+
+- name: Check if ruby 2.2.5 is installed
+  stat: path={{ ansible_env.HOME }}/.anyenv/envs/rbenv/versions/2.2.5
+  register: ruby_is_installed
+
+- name: Install ruby
+  shell: |
+      zsh -lc 'rbenv install 2.2.5 && rbenv global 2.2.5 && rbenv versions'
+  when:
+    - not ruby_is_installed.stat.exists
+
+- name: Install jekyll
+  shell: |
+      zsh -lc 'gem install bundler jekyll'

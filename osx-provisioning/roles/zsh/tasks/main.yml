@@ -1,0 +1,46 @@
+- name: Check if "/usr/local/bin/zsh" is registered to /etc/shells
+  shell: grep "/usr/local/bin/zsh" /etc/shells
+  register: zsh_is_registered
+  failed_when: zsh_is_registered.rc not in [0, 1]
+  become: no
+
+- name: Register "/usr/local/bin/zsh" registered to /etc/shells
+  shell: echo "/usr/local/bin/zsh" >> /etc/shells
+  when: zsh_is_registered.rc == 1
+
+- name: Change login shell
+  user: name={{ ansible_env.USER }}
+        state=present
+        shell=/usr/local/bin/zsh
+
+- name: Check if prezto is installed
+  stat: path={{ ansible_env.HOME }}/.zprezto
+  register: prezto_is_installed
+  become: no
+
+- name: Install prezto
+  script: install_prezto.zsh
+  when:
+    - not prezto_is_installed.stat.exists
+  become: no
+
+- name: Check if git module is installed in prezto
+  shell: grep "'git'" {{ ansible_env.HOME }}/.zprezto/runcoms/zpreztorc
+  register: git_is_installed
+  failed_when: git_is_installed.rc not in [0, 1]
+  become: no
+
+# - name: Add git module to prezto
+#   lineinfile: >
+#     dest={{ ansible_env.HOME }}/.zprezto/runcoms/zpreztorc
+#     backup=yes
+#     state=present
+#     insertafter="'completion'"
+#     line="  'git' \\"
+#   when: git_is_installed.rc == 1
+#   become: no
+
+- name: Add git module to prezto
+  shell: sed -i '' -e "/'completion'/p; s/completion/git/" {{ ansible_env.HOME }}/.zprezto/runcoms/zpreztorc
+  when: git_is_installed.rc == 1
+  become: no

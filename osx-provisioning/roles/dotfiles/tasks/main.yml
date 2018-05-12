@@ -1,0 +1,15 @@
+- name: Check if dotfiles directory exists
+  stat: path=/tmp/dotfiles
+  register: dotfiles_are_downloaded
+
+- name: Clone dotfiles from GitHub
+  shell: git clone git@github.com:OkamotoYuki/dotfiles.git /tmp/dotfiles
+  when: not dotfiles_are_downloaded.stat.exists
+
+- name: Copy dotfiles to home directory
+  copy: follow=yes src={{ item }} dest={{ ansible_env.HOME }}
+  with_fileglob:
+    - "/tmp/dotfiles/.*"
+
+- name: Create vim backup directory
+  file: path={{ ansible_env.HOME }}/.vim/backup state=directory
