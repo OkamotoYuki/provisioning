@@ -17,3 +17,4 @@ homebrew_cask_packages:
   - { name: shiftit }
   - { name: hyperswitch }
   - { name: skype }
+  - { name: night-owl }
